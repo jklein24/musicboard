@@ -14,31 +14,45 @@ pygame.display.init()
 pygame.init()
 pygame.display.set_mode((1,1))
 
-kits = [
-  {
-    'kick': Sound("samples/bd_808.wav"),
-    'cymbal': Sound("samples/drum_cymbal_hard.wav"),
-    'snare': Sound("samples/drum_snare_hard.wav"),
-    'low_tom': Sound("samples/bass_trance_c.wav"),
-    'high_tom': Sound("samples/ambi_haunted_hum.wav"),
-    'hi_hat_closed': Sound("samples/drum_cymbal_pedal.wav")
-  },
-  {
-    'kick': Sound("samples/bd_tek.wav"),
-    'cymbal': Sound("samples/drum_splash_soft.wav"),
-    'snare': Sound("samples/sn_dub.wav"),
-    'low_tom': Sound("samples/tabla_ghe6.wav"),
-    'high_tom': Sound("samples/tabla_ghe8.wav"),
-    'hi_hat_closed': Sound("samples/drum_cymbal_closed.wav")
-  },
-  {
-    'kick': Sound("samples/Oneshotsample/kick.wav"),
-    'cymbal': Sound("samples/Oneshotsample/horn.wav"),
-    'snare': Sound("samples/Oneshotsample/snare.wav"),
-    'low_tom': Sound("samples/Oneshotsample/femalevox.wav"),
-    'high_tom': Sound("samples/Oneshotsample/pitchyvox.wav"),
-    'hi_hat_closed': Sound("samples/Oneshotsample/hatz.wav")
+KEY_TO_SOUND = {
+  K_UP: 'cymbal',
+  K_LEFT: 'snare',
+  K_RIGHT: 'low_tom',
+  K_DOWN: 'high_tom',
+  K_SPACE: 'kick',
+  K_v: 'hi_hat_closed'
+}
+
+def log(message, *args):
+  if __debug__:
+    print(message.format(*args))
+
+def build_kit(filenames, prefix=''):
+  assert len(filenames) == 6
+  return {
+    'kick': Sound('samples/' + prefix + filenames[0] + '.wav'),
+    'cymbal': Sound('samples/' + prefix + filenames[1] + '.wav'),
+    'snare': Sound('samples/' + prefix + filenames[2] + '.wav'),
+    'low_tom': Sound('samples/' + prefix + filenames[3] + '.wav'),
+    'high_tom': Sound('samples/' + prefix + filenames[4] + '.wav'),
+    'hi_hat_closed': Sound('samples/' + prefix + filenames[5] + '.wav')
   }
+
+def handle_key(key):
+  global kit_index
+  if key in KEY_TO_SOUND.keys():
+    log('pressed {0}', KEY_TO_SOUND[key])
+    kits[kit_index][KEY_TO_SOUND[key]].play()
+  elif key == K_z:
+    kit_index = (kit_index + 1) % len(kits)
+    log('new kit_index: {0}', kit_index)
+  else:
+    log('unknown key: {0}', key)
+
+kits = [
+  build_kit(['bd_808', 'drum_cymbal_hard', 'drum_snare_hard', 'bass_trance_c', 'ambi_haunted_hum', 'drum_cymbal_pedal']),
+  build_kit(['bd_tek', 'drum_splash_soft', 'sn_dub', 'tabla_ghe6', 'table_ghe8', 'drum_cymbal_closed']),
+  build_kit(['kick', 'horn', 'snare', 'femalevox', 'pitchyvox', 'hatz'], 'Oneshotsample/')
 ]
 
 kit_index = 0
@@ -46,25 +60,5 @@ kit_index = 0
 while True:
   for event in pygame.event.get(): # event handling loop
     if event.type == KEYDOWN:
-      if (event.key == K_UP):
-        print "pressed up"
-        kits[kit_index]['cymbal'].play()
-      elif (event.key == K_LEFT):
-        print "pressed left"
-        kits[kit_index]['snare'].play()
-      elif (event.key == K_SPACE):
-        print "pressed space"
-        kits[kit_index]['kick'].play()
-      elif (event.key == K_RIGHT):
-        print "pressed right"
-        kits[kit_index]['low_tom'].play()
-      elif (event.key == K_DOWN):
-        print "pressed down"
-        kits[kit_index]['high_tom'].play()
-      elif (event.key == K_v):
-        print "pressed c"
-        kits[kit_index]['hi_hat_closed'].play()
-      elif (event.key == K_z):
-        kit_index = (kit_index + 1) % len(kits)
-        print("new kit_index: {0}".format(kit_index))
+      handle_key(event.key)
 
