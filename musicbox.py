@@ -14,28 +14,57 @@ pygame.display.init()
 pygame.init()
 pygame.display.set_mode((1,1))
 
-cymbal = Sound("samples/drum_cymbal_hard.wav")
-snare = Sound("samples/drum_snare_hard.wav")
-bd_808 = Sound("samples/bd_808.wav")
-bass_trance = Sound("samples/bass_trance_c.wav")
-hum = Sound("samples/ambi_haunted_hum.wav")
+kits = [
+  {
+    'kick': Sound("samples/bd_808.wav"),
+    'cymbal': Sound("samples/drum_cymbal_hard.wav"),
+    'snare': Sound("samples/drum_snare_hard.wav"),
+    'low_tom': Sound("samples/bass_trance_c.wav"),
+    'high_tom': Sound("samples/ambi_haunted_hum.wav"),
+    'hi_hat_closed': Sound("samples/drum_cymbal_pedal.wav")
+  },
+  {
+    'kick': Sound("samples/bd_tek.wav"),
+    'cymbal': Sound("samples/drum_splash_soft.wav"),
+    'snare': Sound("samples/sn_dub.wav"),
+    'low_tom': Sound("samples/tabla_ghe6.wav"),
+    'high_tom': Sound("samples/tabla_ghe8.wav"),
+    'hi_hat_closed': Sound("samples/drum_cymbal_closed.wav")
+  },
+  {
+    'kick': Sound("samples/Oneshotsample/kick.wav"),
+    'cymbal': Sound("samples/Oneshotsample/horn.wav"),
+    'snare': Sound("samples/Oneshotsample/snare.wav"),
+    'low_tom': Sound("samples/Oneshotsample/femalevox.wav"),
+    'high_tom': Sound("samples/Oneshotsample/pitchyvox.wav"),
+    'hi_hat_closed': Sound("samples/Oneshotsample/hatz.wav")
+  }
+]
+
+kit_index = 0
 
 while True:
   for event in pygame.event.get(): # event handling loop
     if event.type == KEYDOWN:
       if (event.key == K_UP):
         print "pressed up"
-        cymbal.play()  
+        kits[kit_index]['cymbal'].play()
       elif (event.key == K_LEFT):
         print "pressed left"
-	snare.play()
+        kits[kit_index]['snare'].play()
       elif (event.key == K_SPACE):
         print "pressed space"
-	bd_808.play()
+        kits[kit_index]['kick'].play()
       elif (event.key == K_RIGHT):
         print "pressed right"
-	bass_trance.play()
+        kits[kit_index]['low_tom'].play()
       elif (event.key == K_DOWN):
         print "pressed down"
-	hum.play()
+        kits[kit_index]['high_tom'].play()
+      elif (event.key == K_v):
+        print "pressed c"
+        kits[kit_index]['hi_hat_closed'].play()
+      elif (event.key == K_z):
+        kit_index = (kit_index + 1) % len(kits)
+        print("new kit_index: {0}".format(kit_index))
 
