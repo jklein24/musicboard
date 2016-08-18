@@ -5,10 +5,10 @@ import os
 import threading
 import pygame
 import pygame.mixer
-from gpiozero import LED
-from time import sleep
+from dotstar_fire import FireThread
 from pygame.locals import *
 from pygame.mixer import Sound
+from dotstar import Adafruit_DotStar
 
 os.putenv('SDL_VIDEODRIVER', 'fbcon')
 pygame.mixer.pre_init(44100, -16, 1, 1024)
@@ -26,14 +26,20 @@ KEY_TO_SOUND = {
   K_v: 'hi_hat_closed'
 }
 
-SOUND_TO_LED = {
-  'cymbal': LED(17),
-  'snare': LED(18),
-  'low_tom': LED(27),
-  'high_tom': LED(22),
-  'kick': LED(23),
-  'hi_hat_closed': LED(24)
+KEY_TO_CENTER_PIXEL = {
+  K_UP: 5,
+  K_LEFT: 15,
+  K_RIGHT: 25,
+  K_DOWN: 35,
+  K_SPACE: 45,
+  K_v: 55
 }
+
+# DotStar setup
+NUM_PIXELS = 60
+strip = Adafruit_DotStar(NUM_PIXELS)
+strip.begin()           # Initialize pins for output
+strip.setBrightness(64) # Limit brightness to ~1/4 duty cycle
 
 def log(message, *args):
   if __debug__:
@@ -50,43 +56,13 @@ def build_kit(filenames, prefix=''):
     'hi_hat_closed': Sound('samples/' + prefix + filenames[5] + '.wav')
   }
 
-class LedThread (threading.Thread):
-  threadLock = threading.Lock()
-  threads = []
-
-  def __init__(self, led):
-    threading.Thread.__init__(self)
-    self.threadId = led.pin.number
-    self.led = led
-
-  def run(self):
-    try:
-      LedThread.threadLock.acquire()
-      if self.threadId in LedThread.threads:
-        LedThread.threadLock.release()
-        return
-      LedThread.threads.append(self.threadId)
-      LedThread.threadLock.release()
-      log("LED #{0} on", self.threadId)
-      self.led.on()
-      sleep(1)
-      self.led.off()
-      log("LED #{0} off", self.threadId)
-      LedThread.threads.remove(self.threadId)
-    except Exception as e:
-      print "Exiting %s due to Error: %s"%(self.name,str(e))
-
-def flash_led(led):
-  thread = LedThread(led)
-  thread.daemon = True
-  thread.start()
-
 def handle_key(key):
   global kit_index
+  global fireThread
   if key in KEY_TO_SOUND.keys():
     log('pressed {0}', KEY_TO_SOUND[key])
     kits[kit_index][KEY_TO_SOUND[key]].play()
-    flash_led(SOUND_TO_LED[KEY_TO_SOUND[key]])
+    fireThread.ignite(KEY_TO_CENTER_PIXEL[key])
   elif key == K_z:
     kit_index = (kit_index + 1) % len(kits)
     log('new kit_index: {0}', kit_index)
@@ -100,6 +76,9 @@ kits = [
 ]
 
 kit_index = 0
+fireThread = FireThread(strip)
+fireThread.daemon = True
+fireThread.start()
 
 while True:
   for event in pygame.event.get(): # event handling loop
