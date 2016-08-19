@@ -9,6 +9,7 @@ from dotstar_fire import FireThread
 from pygame.locals import *
 from pygame.mixer import Sound
 from dotstar import Adafruit_DotStar
+import Adafruit_MPR121.MPR121 as MPR121
 
 os.putenv('SDL_VIDEODRIVER', 'fbcon')
 pygame.mixer.pre_init(44100, -16, 1, 1024)
@@ -23,16 +24,26 @@ KEY_TO_SOUND = {
   K_RIGHT: 'low_tom',
   K_DOWN: 'high_tom',
   K_SPACE: 'kick',
-  K_v: 'hi_hat_closed'
+  K_v: 'hi_hat_closed',
+  K_w: 'clap',
+  K_a: 'cowbell',
+  K_s: 'vocal',
+  K_d: 'horn',
+  K_f: 'misc'
 }
 
 KEY_TO_CENTER_PIXEL = {
   K_UP: 5,
-  K_LEFT: 15,
-  K_RIGHT: 25,
-  K_DOWN: 35,
-  K_SPACE: 45,
-  K_v: 55
+  K_LEFT: 10,
+  K_RIGHT: 15,
+  K_DOWN: 20,
+  K_SPACE: 25,
+  K_v: 30,
+  K_w: 35,
+  K_a: 40,
+  K_s: 45,
+  K_d: 50,
+  K_f: 54
 }
 
 # DotStar setup
@@ -46,14 +57,19 @@ def log(message, *args):
     print(message.format(*args))
 
 def build_kit(filenames, prefix=''):
-  assert len(filenames) == 6
+  assert len(filenames) == 11
   return {
     'kick': Sound('samples/' + prefix + filenames[0] + '.wav'),
     'cymbal': Sound('samples/' + prefix + filenames[1] + '.wav'),
     'snare': Sound('samples/' + prefix + filenames[2] + '.wav'),
     'low_tom': Sound('samples/' + prefix + filenames[3] + '.wav'),
     'high_tom': Sound('samples/' + prefix + filenames[4] + '.wav'),
-    'hi_hat_closed': Sound('samples/' + prefix + filenames[5] + '.wav')
+    'hi_hat_closed': Sound('samples/' + prefix + filenames[5] + '.wav'),
+    'clap': Sound('samples/' + prefix + filenames[6] + '.wav'),
+    'cowbell': Sound('samples/' + prefix + filenames[7] + '.wav'),
+    'vocal': Sound('samples/' + prefix + filenames[8] + '.wav'),
+    'horn': Sound('samples/' + prefix + filenames[9] + '.wav'),
+    'misc': Sound('samples/' + prefix + filenames[10] + '.wav')
   }
 
 def handle_key(key):
@@ -70,9 +86,9 @@ def handle_key(key):
     log('unknown key: {0}', key)
 
 kits = [
-  build_kit(['bd_808', 'drum_cymbal_hard', 'drum_snare_hard', 'bass_trance_c', 'ambi_haunted_hum', 'drum_cymbal_pedal']),
-  build_kit(['bd_tek', 'drum_splash_soft', 'sn_dub', 'tabla_ghe6', 'table_ghe8', 'drum_cymbal_closed']),
-  build_kit(['kick', 'horn', 'snare', 'femalevox', 'pitchyvox', 'hatz'], 'Oneshotsample/')
+  build_kit(['bd_808', 'drum_cymbal_hard', 'drum_snare_hard', 'bass_trance_c', 'ambi_haunted_hum', 'drum_cymbal_pedal', 'neverbe_clap', 'drum_cowbell', 'ambi_choir', 'misc_crow', 'vinyl_scratch']),
+  build_kit(['bd_tek', 'drum_splash_soft', 'sn_dub', 'tabla_ghe6', 'table_ghe8', 'drum_cymbal_closed', 'neverbe_clap', 'drum_cowbell', 'ambi_choir', 'misc_crow', 'vinyl_scratch']),
+  build_kit(['kick', 'horn', 'snare', 'femalevox', 'pitchyvox', 'hatz', 'monstervox', 'malevox', 'misc_burp', 'bd_zome', 'elec_twang'], 'Oneshotsample/')
 ]
 
 kit_index = 0
