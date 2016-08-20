@@ -2,7 +2,7 @@ import threading
 import time
 import random
 
-DEBUG = True
+DEBUG = False
 COOLING_SPEED = 55
 
 class FireThread(threading.Thread):
@@ -86,4 +86,7 @@ class FireThread(threading.Thread):
     elif t192 > 0x40:             # middle
       self.strip.setPixelColor(pixel, self.strip.Color(255, heatramp, 0))
     else:                               # coolest
-      self.strip.setPixelColor(pixel, self.strip.Color(heatramp, 0, 0))
+      if pixel == 17:
+        self.strip.setPixelColor(pixel, self.strip.Color(max(heatramp, 4), 4, 0))
+      else:
+        self.strip.setPixelColor(pixel, self.strip.Color(heatramp, 0, 0))

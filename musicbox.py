@@ -48,7 +48,7 @@ KEY_TO_CENTER_PIXEL = {
 
 # DotStar setup
 NUM_PIXELS = 60
-strip = Adafruit_DotStar(NUM_PIXELS)
+strip = Adafruit_DotStar(NUM_PIXELS, order='bgr')
 strip.begin()           # Initialize pins for output
 strip.setBrightness(64) # Limit brightness to ~1/4 duty cycle
 
