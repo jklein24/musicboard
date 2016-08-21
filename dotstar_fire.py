@@ -6,14 +6,18 @@ DEBUG = False
 COOLING_SPEED = 55
 
 class FireThread(threading.Thread):
-  def __init__(self, strip):
+  def __init__(self, strip, ready):
     threading.Thread.__init__(self)
+    print "init"
     # For every pixel, construct a heat vector with a magnitude and direction.
     self.heat = [{'magnitude': 0, 'direction': 0} for i in range(strip.numPixels())]
     self.strip = strip
+    self.ready = ready
 
   def run(self):
     try:
+      print "run"
+      self.ready.set()
       while True:
         self.propagate()
     except Exception as e:
