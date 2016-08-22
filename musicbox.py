@@ -63,9 +63,10 @@ def log(message, *args):
   if __debug__:
     print(message.format(*args))
 
-def build_kit(filenames, prefix=''):
+def build_kit(kit_name, filenames, prefix=''):
   assert len(filenames) == 11
   return {
+    'name': Sound('samples/' + kit_name + '.wav'),
     'kick': Sound('samples/' + prefix + filenames[0] + '.wav'),
     'cymbal': Sound('samples/' + prefix + filenames[1] + '.wav'),
     'snare': Sound('samples/' + prefix + filenames[2] + '.wav'),
@@ -85,6 +86,7 @@ def handle_key(key):
   if key == -1:
     kit_index = (kit_index + 1) % len(kits)
     log('new kit_index: {0}', kit_index)
+    kits[kit_index]['name'].play()
   elif key < len(KEY_TO_SOUND):
     log('pressed {0}', KEY_TO_SOUND[key])
     kits[kit_index][KEY_TO_SOUND[key]].play()
@@ -93,9 +95,9 @@ def handle_key(key):
     log('unknown key: {0}', key)
 
 kits = [
-  build_kit(['kick', 'horn', 'snare', 'femalevox', 'pitchyvox', 'hatz', 'monstervox', 'malevox', 'rimshot', 'bd_zome', 'elec_twang'], 'Oneshotsample/'),
-  build_kit(['bd_808', 'drum_cymbal_hard', 'drum_snare_hard', 'bass_trance_c', 'ambi_haunted_hum', 'drum_cymbal_pedal', 'neverbe_clap', 'drum_cowbell', 'ambi_choir', 'misc_crow', 'vinyl_scratch']),
-  build_kit(['bd_tek', 'drum_splash_soft', 'sn_dub', 'tabla_ghe6', 'table_ghe8', 'drum_cymbal_closed', 'neverbe_clap', 'drum_cowbell', 'ambi_choir', 'misc_crow', 'vinyl_scratch'])
+  build_kit('Kit_one', ['kick', 'horn', 'snare', 'femalevox', 'pitchyvox', 'hatz', 'monstervox', 'malevox', 'rimshot', 'bd_zome', 'elec_twang'], 'Oneshotsample/'),
+  build_kit('Kit_two', ['bd_808', 'drum_cymbal_hard', 'drum_snare_hard', 'bass_trance_c', 'ambi_haunted_hum', 'drum_cymbal_pedal', 'neverbe_clap', 'drum_cowbell', 'ambi_choir', 'misc_crow', 'vinyl_scratch']),
+  build_kit('Kit_three', ['bd_tek', 'drum_splash_soft', 'sn_dub', 'tabla_ghe6', 'tabla_ghe8', 'drum_cymbal_closed', 'neverbe_clap', 'drum_cowbell', 'ambi_choir', 'misc_crow', 'vinyl_scratch'])
 ]
 
 kit_index = 0
