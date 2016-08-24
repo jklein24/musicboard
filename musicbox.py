@@ -17,31 +17,31 @@ pygame.mixer.init()
 pygame.init()
 
 KEY_TO_SOUND = [
- 'cymbal',
- 'snare',
- 'low_tom',
- 'high_tom',
- 'kick',
- 'hi_hat_closed',
- 'clap',
- 'cowbell',
- 'vocal',
+ 'misc',
  'horn',
- 'misc'
+ 'vocal',
+ 'cowbell',
+ 'clap',
+ 'hi_hat_closed',
+ 'kick',
+ 'high_tom',
+ 'low_tom',
+ 'snare',
+ 'cymbal'
 ]
 
 KEY_TO_CENTER_PIXEL = [
-  57,
-  51,
-  47,
-  41,
-  34,
-  24,
-  21,
-  17,
-  11,
+  2,
   7,
-  2
+  11,
+  17,
+  21,
+  24,
+  34,
+  41,
+  47,
+  51,
+  57
 ]
 
 # DotStar setup
@@ -108,7 +108,7 @@ fireThread.daemon = True
 fireThread.start()
 
 ready.wait()
-handle_key(4)
+handle_key(6)
 
 # Main loop to print a message every time a pin is touched.
 print('Press Ctrl-C to quit.')
