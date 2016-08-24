@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import os
 import pygame
 import pygame.mixer
 import threading
@@ -28,19 +27,7 @@ KEY_TO_SOUND = [
  'cymbal'
 ]
 
-KEY_TO_CENTER_PIXEL = [
-  2,
-  7,
-  11,
-  17,
-  21,
-  24,
-  34,
-  41,
-  47,
-  51,
-  57
-]
+KEY_TO_CENTER_PIXEL = [2, 7, 11, 17, 21, 24, 34, 41, 47, 51, 57]
 
 # DotStar setup
 NUM_PIXELS = 60
