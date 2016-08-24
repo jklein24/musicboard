@@ -5,6 +5,7 @@ import pygame.mixer
 import threading
 import time
 from dotstar_fire import FireThread
+from sequencer import SequencerThread
 from pygame.mixer import Sound
 from dotstar import Adafruit_DotStar
 import Adafruit_MPR121.MPR121 as MPR121
@@ -72,9 +73,10 @@ def handle_key(key):
     kit_index = (kit_index + 1) % len(kits)
     log('new kit_index: {0}', kit_index)
     kits[kit_index]['name'].play()
+    sequencerThread.setKit(kits[kit_index])
   elif key < len(KEY_TO_SOUND):
     log('pressed {0}', KEY_TO_SOUND[key])
-    kits[kit_index][KEY_TO_SOUND[key]].play()
+    sequencerThread.addClip(KEY_TO_SOUND[key])
     fireThread.ignite(KEY_TO_CENTER_PIXEL[key])
   else:
     log('unknown key: {0}', key)
@@ -92,8 +94,12 @@ fireThread = FireThread(strip, ready)
 fireThread.daemon = True
 fireThread.start()
 
+sequencerThread = SequencerThread(kits[kit_index])
+sequencerThread.daemon = True
+sequencerThread.start()
+
 ready.wait()
-handle_key(6)
+#handle_key(6)
 
 # Main loop to print a message every time a pin is touched.
 print('Press Ctrl-C to quit.')
