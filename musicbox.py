@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 
-import time
 import os
-import threading
 import pygame
 import pygame.mixer
+import threading
+import time
 from dotstar_fire import FireThread
-from pygame.locals import *
 from pygame.mixer import Sound
 from dotstar import Adafruit_DotStar
 import Adafruit_MPR121.MPR121 as MPR121
 
-os.putenv('SDL_VIDEODRIVER', 'fbcon')
 pygame.mixer.pre_init(44100, -16, 1, 1024)
 pygame.mixer.init()
 pygame.init()
