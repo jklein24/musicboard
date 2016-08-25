@@ -15,7 +15,7 @@ class SequencerThread(threading.Thread):
 
   def run(self):
     try:
-      self.lastBeatTime = time.clock()
+      self.lastBeatTime = time.time() * 1000
       while True:
         self.nextBeat()
         # Allows 16th notes:
@@ -26,26 +26,32 @@ class SequencerThread(threading.Thread):
   def setKit(self, kit):
     self.kit = kit
 
+  def log(self, msg):
+    if DEBUG:
+      print msg
+
   def addClip(self, sound):
     if not sound in self.kit.keys():
       return
     self.beatLock.acquire()
     # Snap to nearest 16th
-    if time.clock() - self.lastBeatTime > (7.5 / BPM):
+    currentTime = time.time() * 1000
+    self.log("currentTime: %d, lastTime: %d, diff: %d"%(currentTime, self.lastBeatTime, currentTime - self.lastBeatTime))
+    if currentTime - self.lastBeatTime > (7.5 / BPM) * 1000:
       self.beats[self.currentBeat] ^= (1 << self.kit.keys().index(sound))
     else:
       self.beats[self.currentBeat - 1] ^= (1 << self.kit.keys().index(sound))
       self.kit[sound].play()
-    print "New value for beat %d: %d" % (self.currentBeat, self.beats[self.currentBeat])
+    self.log("New value for beat %d: %d" % (self.currentBeat, self.beats[self.currentBeat]))
     self.beatLock.release()
 
   def nextBeat(self):
-    print "Playing beat %d: %d" % (self.currentBeat, self.beats[self.currentBeat])
+    self.log("Playing beat %d: %d" % (self.currentBeat, self.beats[self.currentBeat]))
     sounds = self.kit.keys()
     self.beatLock.acquire()
     for i in range(len(sounds)):
       if (1 << i) & self.beats[self.currentBeat]:
         self.kit[sounds[i]].play()
     self.currentBeat = (self.currentBeat + 1) % (NUM_BARS * 16)
-    self.lastBeatTime = time.clock()
+    self.lastBeatTime = time.time() * 1000
     self.beatLock.release()
