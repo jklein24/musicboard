@@ -9,6 +9,7 @@ from sequencer import SequencerThread
 from pygame.mixer import Sound
 from dotstar import Adafruit_DotStar
 import Adafruit_MPR121.MPR121 as MPR121
+import RPi.GPIO as GPIO
 
 pygame.mixer.pre_init(44100, -16, 1, 1024)
 pygame.mixer.init()
@@ -76,7 +77,10 @@ def handle_key(key):
     sequencerThread.setKit(kits[kit_index])
   elif key < len(KEY_TO_SOUND):
     log('pressed {0}', KEY_TO_SOUND[key])
-    sequencerThread.addClip(KEY_TO_SOUND[key])
+    if mode == 1:
+      sequencerThread.addClip(KEY_TO_SOUND[key])
+    else:
+      kits[kit_index][KEY_TO_SOUND[key]].play()
     fireThread.ignite(KEY_TO_CENTER_PIXEL[key])
   else:
     log('unknown key: {0}', key)
@@ -93,18 +97,42 @@ ready = threading.Event()
 fireThread = FireThread(strip, ready)
 fireThread.daemon = True
 fireThread.start()
-
-sequencerThread = SequencerThread(kits[kit_index])
-sequencerThread.daemon = True
-sequencerThread.start()
-
 ready.wait()
-#handle_key(6)
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(22, GPIO.IN)
+# Mode 0 is clip triggering. Mode 1 is sequencer.
+mode = 1
+lastPressedModeButton = 0
+if mode == 1:
+  sequencerThread = SequencerThread(kits[kit_index], strip)
+  sequencerThread.daemon = True
+  sequencerThread.start()
+  fireThread.setEnabled(False)
+
+if mode == 0:
+  handle_key(6)
+else:
+  kits[kit_index]['kick'].play()
+  fireThread.ignite(KEY_TO_CENTER_PIXEL[6])
 
 # Main loop to print a message every time a pin is touched.
 print('Press Ctrl-C to quit.')
 last_touched = cap.touched()
 while True:
+  if (GPIO.input(22) == True and (time.time() * 1000) - lastPressedModeButton > 500):
+    lastPressedModeButton = time.time() * 1000
+    mode = (mode + 1) % 2
+    log("swapping modes. New Mode: {0}", mode)
+    if mode == 0:
+      sequencerThread.join()
+      fireThread.setEnabled(True)
+    else:
+      sequencerThread = SequencerThread(kits[kit_index], strip)
+      sequencerThread.daemon = True
+      sequencerThread.start()
+      fireThread.setEnabled(False)
+
   current_touched = cap.touched()
   # Check each pin's last and current state to see if it was pressed or released.
   for i in range(12):
