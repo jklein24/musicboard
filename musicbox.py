@@ -53,18 +53,18 @@ def log(message, *args):
 def build_kit(kit_name, filenames, prefix=''):
   assert len(filenames) == 11
   return {
-    'name': Sound('samples/' + kit_name + '.wav'),
-    'kick': Sound('samples/' + prefix + filenames[0] + '.wav'),
-    'cymbal': Sound('samples/' + prefix + filenames[1] + '.wav'),
-    'snare': Sound('samples/' + prefix + filenames[2] + '.wav'),
-    'low_tom': Sound('samples/' + prefix + filenames[3] + '.wav'),
-    'high_tom': Sound('samples/' + prefix + filenames[4] + '.wav'),
-    'hi_hat_closed': Sound('samples/' + prefix + filenames[5] + '.wav'),
-    'clap': Sound('samples/' + prefix + filenames[6] + '.wav'),
-    'cowbell': Sound('samples/' + prefix + filenames[7] + '.wav'),
-    'vocal': Sound('samples/' + prefix + filenames[8] + '.wav'),
-    'horn': Sound('samples/' + prefix + filenames[9] + '.wav'),
-    'misc': Sound('samples/' + prefix + filenames[10] + '.wav')
+    'name': Sound('/home/pi/musicbox/samples/' + kit_name + '.wav'),
+    'kick': Sound(prefix + filenames[0] + '.wav'),
+    'cymbal': Sound(prefix + filenames[1] + '.wav'),
+    'snare': Sound(prefix + filenames[2] + '.wav'),
+    'low_tom': Sound(prefix + filenames[3] + '.wav'),
+    'high_tom': Sound(prefix + filenames[4] + '.wav'),
+    'hi_hat_closed': Sound(prefix + filenames[5] + '.wav'),
+    'clap': Sound(prefix + filenames[6] + '.wav'),
+    'cowbell': Sound(prefix + filenames[7] + '.wav'),
+    'vocal': Sound(prefix + filenames[8] + '.wav'),
+    'horn': Sound(prefix + filenames[9] + '.wav'),
+    'misc': Sound(prefix + filenames[10] + '.wav')
   }
 
 def handle_key(key):
@@ -74,64 +74,69 @@ def handle_key(key):
     kit_index = (kit_index + 1) % len(kits)
     log('new kit_index: {0}', kit_index)
     kits[kit_index]['name'].play()
-    sequencerThread.setKit(kits[kit_index])
+    if mode == 1:
+      sequencerThread.setKit(kits[kit_index])
   elif key < len(KEY_TO_SOUND):
     log('pressed {0}', KEY_TO_SOUND[key])
     if mode == 1:
       sequencerThread.addClip(KEY_TO_SOUND[key])
     else:
       kits[kit_index][KEY_TO_SOUND[key]].play()
-    fireThread.ignite(KEY_TO_CENTER_PIXEL[key])
+      fireThread.ignite(KEY_TO_CENTER_PIXEL[key])
   else:
     log('unknown key: {0}', key)
 
 kits = [
-  build_kit('Kit_one', ['kick', 'horn', 'snare', 'femalevox', 'pitchyvox', 'hatz', 'monstervox', 'malevox', 'rimshot', 'bd_zome', 'elec_twang'], 'Oneshotsample/'),
-  build_kit('Kit_two', ['bd_808', 'drum_cymbal_hard', 'drum_snare_hard', 'bass_trance_c', 'ambi_haunted_hum', 'drum_cymbal_pedal', 'neverbe_clap', 'drum_cowbell', 'ambi_choir', 'misc_crow', 'vinyl_scratch']),
-  build_kit('Kit_three', ['bd_tek', 'drum_splash_soft', 'sn_dub', 'tabla_ghe6', 'tabla_ghe8', 'drum_cymbal_closed', 'neverbe_clap', 'drum_cowbell', 'ambi_choir', 'misc_crow', 'vinyl_scratch'])
+  build_kit('Kit_one', ['kick', 'horn', 'snare', 'femalevox', 'pitchyvox', 'hatz', 'monstervox', 'malevox', 'rimshot', 'bd_zome', 'elec_twang'], '/home/pi/musicbox/samples/Oneshotsample/'),
+  build_kit('Kit_two', ['bd_808', 'drum_cymbal_hard', 'drum_snare_hard', 'bass_trance_c', 'ambi_haunted_hum', 'drum_cymbal_pedal', 'neverbe_clap', 'drum_cowbell', 'ambi_choir', 'misc_crow', 'vinyl_scratch'], '/home/pi/musicbox/samples/'),
+  build_kit('Kit_three', ['bd_tek', 'drum_splash_soft', 'sn_dub', 'tabla_ghe6', 'tabla_ghe8', 'drum_cymbal_closed', 'neverbe_clap', 'drum_cowbell', 'ambi_choir', 'misc_crow', 'vinyl_scratch'], '/home/pi/musicbox/samples/')
 ]
 
 kit_index = 0
 
-ready = threading.Event()
-fireThread = FireThread(strip, ready)
-fireThread.daemon = True
-fireThread.start()
-ready.wait()
+def makeFireThread():
+  global fireThread
+  ready = threading.Event()
+  fireThread = FireThread(strip, ready)
+  fireThread.daemon = True
+  fireThread.start()
+  ready.wait()
+
+def makeSequencerThread():
+  global sequencerThread
+  sequencerThread = SequencerThread(kits[kit_index], strip)
+  sequencerThread.daemon = True
+  sequencerThread.start()
+
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(22, GPIO.IN)
 # Mode 0 is clip triggering. Mode 1 is sequencer.
-mode = 1
+mode = 0
 lastPressedModeButton = 0
 if mode == 1:
-  sequencerThread = SequencerThread(kits[kit_index], strip)
-  sequencerThread.daemon = True
-  sequencerThread.start()
-  fireThread.setEnabled(False)
-
-if mode == 0:
-  handle_key(6)
-else:
+  makeSequencerThread()
   kits[kit_index]['kick'].play()
-  fireThread.ignite(KEY_TO_CENTER_PIXEL[6])
+else:
+  makeFireThread()
+  handle_key(6)
 
 # Main loop to print a message every time a pin is touched.
 print('Press Ctrl-C to quit.')
 last_touched = cap.touched()
 while True:
-  if (GPIO.input(22) == True and (time.time() * 1000) - lastPressedModeButton > 500):
+  # Uncomment this and comment out the next line to enable mode switching.
+  # if (GPIO.input(22) == False and (time.time() * 1000) - lastPressedModeButton > 500):
+  if (False):
     lastPressedModeButton = time.time() * 1000
     mode = (mode + 1) % 2
-    log("swapping modes. New Mode: {0}", mode)
+    log("swapping modes. New Mode: {0}", 'sequencer' if mode == 1 else 'clips')
     if mode == 0:
       sequencerThread.join()
-      fireThread.setEnabled(True)
+      makeFireThread()
     else:
-      sequencerThread = SequencerThread(kits[kit_index], strip)
-      sequencerThread.daemon = True
-      sequencerThread.start()
-      fireThread.setEnabled(False)
+      fireThread.join()
+      makeSequencerThread()
 
   current_touched = cap.touched()
   # Check each pin's last and current state to see if it was pressed or released.

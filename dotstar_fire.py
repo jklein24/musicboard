@@ -13,23 +13,20 @@ class FireThread(threading.Thread):
     self.heat = [{'magnitude': 0, 'direction': 0} for i in range(strip.numPixels())]
     self.strip = strip
     self.ready = ready
-    self.enabled = True
+    self._stopEvent = threading.Event()
 
   def run(self):
     try:
       print "run"
       self.ready.set()
-      while True:
+      while not self._stopEvent.isSet():
         self.propagate()
     except Exception as e:
       print "Exiting %s due to Error: %s"%(self.name,str(e))
 
-  def setEnabled(self, enabled):
-    self.enabled = enabled
-    if not enabled:
-      for i in range(self.strip.numPixels() - 1):
-        self.strip.setPixelColor(i, self.strip.Color(0, 0, 0))
-      self.strip.show()
+  def join(self, timeout=None):
+    self._stopEvent.set()
+    threading.Thread.join(self, timeout)
 
   def ignite(self, center):
     # Ignite 2 'sparks' near the center going outward:
@@ -46,9 +43,6 @@ class FireThread(threading.Thread):
     print "Igniting right spark to %d and left to %d" % (self.heat[rightSpark]['magnitude'], self.heat[leftSpark]['magnitude'])
 
   def propagate(self):
-    if not self.enabled:
-      return
-
     heat = self.heat
     # Step 1.  Cool down every cell a little
     for h in heat:
