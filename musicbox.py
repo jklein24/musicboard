@@ -16,23 +16,34 @@ pygame.mixer.init()
 pygame.init()
 
 KEY_TO_SOUND = [
- 'misc',
- 'horn',
- 'vocal',
- 'cowbell',
- 'clap',
- 'hi_hat_closed',
  'kick',
- 'high_tom',
- 'low_tom',
+ 'cymbal',
  'snare',
- 'cymbal'
+ 'low_tom',
+ 'high_tom',
+ 'hi_hat_closed',
+ 'clap',
+ 'cowbell',
+ 'vocal',
+ 'horn',
+ 'misc'
 ]
 
-KEY_TO_CENTER_PIXEL = [2, 7, 11, 17, 21, 24, 34, 41, 47, 51, 57]
+KEY_TO_FINGER = [
+ (0, 3),
+ (3, 4),
+ (7, 4),
+ (11, 4),
+ (15, 3),
+ (18, 3),
+ (21, 4),
+ (25, 4),
+ (29, 4),
+ (33, 3)
+]
 
 # DotStar setup
-NUM_PIXELS = 60
+NUM_PIXELS = 36
 strip = Adafruit_DotStar(NUM_PIXELS, order='bgr')
 strip.begin()           # Initialize pins for output
 strip.setBrightness(64) # Limit brightness to ~1/4 duty cycle
@@ -76,20 +87,24 @@ def handle_key(key):
     kits[kit_index]['name'].play()
     if mode == 1:
       sequencerThread.setKit(kits[kit_index])
-  elif key < len(KEY_TO_SOUND):
+  elif key <  3: # len(KEY_TO_FINGER):
     log('pressed {0}', KEY_TO_SOUND[key])
     if mode == 1:
       sequencerThread.addClip(KEY_TO_SOUND[key])
     else:
       kits[kit_index][KEY_TO_SOUND[key]].play()
-      fireThread.ignite(KEY_TO_CENTER_PIXEL[key])
+      fireThread.ignite(KEY_TO_FINGER[key][0], KEY_TO_FINGER[key][1])
   else:
     log('unknown key: {0}', key)
 
 kits = [
-  build_kit('Kit_one', ['kick', 'horn', 'snare', 'femalevox', 'pitchyvox', 'hatz', 'monstervox', 'malevox', 'rimshot', 'bd_zome', 'elec_twang'], '/home/pi/musicbox/samples/Oneshotsample/'),
-  build_kit('Kit_two', ['bd_808', 'drum_cymbal_hard', 'drum_snare_hard', 'bass_trance_c', 'ambi_haunted_hum', 'drum_cymbal_pedal', 'neverbe_clap', 'drum_cowbell', 'ambi_choir', 'misc_crow', 'vinyl_scratch'], '/home/pi/musicbox/samples/'),
-  build_kit('Kit_three', ['bd_tek', 'drum_splash_soft', 'sn_dub', 'tabla_ghe6', 'tabla_ghe8', 'drum_cymbal_closed', 'neverbe_clap', 'drum_cowbell', 'ambi_choir', 'misc_crow', 'vinyl_scratch'], '/home/pi/musicbox/samples/')
+  build_kit('Kit_two', ['F2', 'G2', 'A3', 'A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
+  build_kit('Kit_two', ['G2', 'A3', 'A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
+  build_kit('Kit_two', ['A3', 'A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
+  build_kit('Kit_two', ['A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'rimshot', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
+  build_kit('Kit_two', ['C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'x', 'rimshot', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
+  build_kit('Kit_two', ['D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'D4', 'x', 'rimshot', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
+  build_kit('Kit_two', ['E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'D4', 'E4', 'x', 'rimshot', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
 ]
 
 kit_index = 0
@@ -119,7 +134,7 @@ if mode == 1:
   kits[kit_index]['kick'].play()
 else:
   makeFireThread()
-  handle_key(6)
+  handle_key(2)
 
 # Main loop to print a message every time a pin is touched.
 print('Press Ctrl-C to quit.')

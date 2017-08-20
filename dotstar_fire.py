@@ -9,8 +9,8 @@ class FireThread(threading.Thread):
   def __init__(self, strip, ready):
     threading.Thread.__init__(self)
     print "init"
-    # For every pixel, construct a heat vector with a magnitude and direction.
-    self.heat = [{'magnitude': 0, 'direction': 0} for i in range(strip.numPixels())]
+    # For every pixel, construct a heat vector with a magnitude and a ttl representing steps left.
+    self.heat = [{'magnitude': 0, 'ttl': 0} for i in range(strip.numPixels())]
     self.strip = strip
     self.ready = ready
     self._stopEvent = threading.Event()
@@ -28,19 +28,10 @@ class FireThread(threading.Thread):
     self._stopEvent.set()
     threading.Thread.join(self, timeout)
 
-  def ignite(self, center):
-    # Ignite 2 'sparks' near the center going outward:
-    leftSpark, rightSpark = center, center + 1
-    # Round towards the center. That way, both pixels are always on-screen.
-    if (center > self.strip.numPixels() / 2):
-      leftSpark -= 1
-      rightSpark -= 1
-
-    self.heat[rightSpark]['magnitude'] = random.randint(175,255);
-    self.heat[rightSpark]['direction'] = 1;
-    self.heat[leftSpark]['magnitude'] = random.randint(175,255);
-    self.heat[leftSpark]['direction'] = -1;
-    print "Igniting right spark to %d and left to %d" % (self.heat[rightSpark]['magnitude'], self.heat[leftSpark]['magnitude'])
+  def ignite(self, start, pixelCount):
+    self.heat[start]['magnitude'] = random.randint(175,255);
+    self.heat[start]['ttl'] = pixelCount - 1;
+    print "Igniting right spark to %d and left to %d" % (self.heat[start]['magnitude'], self.heat[start]['ttl'])
 
   def propagate(self):
     heat = self.heat
@@ -53,26 +44,13 @@ class FireThread(threading.Thread):
         h['magnitude'] = h['magnitude'] - cooldown;
 
     # Step 2.  Heat from each cell drifts in the corresponding direction
-    rights = []
-    lefts = []
-    for i in range(len(heat)):
-      if heat[i]['direction'] == 1 and i < len(heat) - 1:
+    for i in reversed(range(len(heat))):
+      if heat[i]['ttl'] > 0 and i < len(heat) - 1:
         heat[i + 1]['magnitude'] = min(heat[i + 1]['magnitude'] + heat[i]['magnitude'], 255)
-        rights.append(i)
-      elif heat[i]['direction'] == -1 and i > 0:
-        heat[i - 1]['magnitude'] = min(heat[i - 1]['magnitude'] + heat[i]['magnitude'], 255)
-        lefts.append(i)
-      heat[i]['direction'] = 0
+        heat[i + 1]['ttl'] = heat[i]['ttl'] - 1
+        heat[i]['ttl'] = 0
 
-    for r in rights:
-      if r < len(heat) - 1:
-        heat[r + 1]['direction'] = 1
-
-    for l in lefts:
-      if l > 0:
-        heat[l - 1]['direction'] -= 1
-
-    # Step 4.  Convert heat to LED colors
+    # Step 3.  Convert heat to LED colors
     for i in range(len(heat)):
       self.setPixelHeatColor(i, heat[i]['magnitude']);
 
