@@ -81,13 +81,16 @@ def build_kit(kit_name, filenames, prefix=''):
 def handle_key(key):
   global kit_index
   global fireThread
-  if key == -1:
-    kit_index = (kit_index + 1) % len(kits)
+  if key == -1 or key == 10:
+    if key == -1:
+      kit_index = (kit_index + 1) % len(kits)
+    else :
+      kit_index = (kit_index - 1) % len(kits)
     log('new kit_index: {0}', kit_index)
     kits[kit_index]['name'].play()
     if mode == 1:
       sequencerThread.setKit(kits[kit_index])
-  elif key <  3: # len(KEY_TO_FINGER):
+  elif key <  len(KEY_TO_FINGER):
     log('pressed {0}', KEY_TO_SOUND[key])
     if mode == 1:
       sequencerThread.addClip(KEY_TO_SOUND[key])
@@ -98,13 +101,13 @@ def handle_key(key):
     log('unknown key: {0}', key)
 
 kits = [
-  build_kit('Kit_two', ['F2', 'G2', 'A3', 'A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
-  build_kit('Kit_two', ['G2', 'A3', 'A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
-  build_kit('Kit_two', ['A3', 'A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
-  build_kit('Kit_two', ['A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'rimshot', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
-  build_kit('Kit_two', ['C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'x', 'rimshot', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
-  build_kit('Kit_two', ['D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'D4', 'x', 'rimshot', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
-  build_kit('Kit_two', ['E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'D4', 'E4', 'x', 'rimshot', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
+  build_kit('F_Major', ['F2', 'G2', 'A3', 'A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
+  build_kit('G_Dorian', ['G2', 'A3', 'A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
+  build_kit('A_Phrygian', ['A3', 'A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
+  build_kit('A_Sharp_Lydian', ['A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'rimshot', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
+  build_kit('C_Mixolydian', ['C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'x', 'rimshot', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
+  build_kit('D_Minor', ['D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'D4', 'x', 'rimshot', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
+  build_kit('E_Lochrian', ['E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'D4', 'E4', 'x', 'rimshot', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
 ]
 
 kit_index = 0
