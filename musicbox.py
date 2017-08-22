@@ -44,7 +44,7 @@ KEY_TO_FINGER = [
 
 # DotStar setup
 NUM_PIXELS = 36
-strip = Adafruit_DotStar(NUM_PIXELS, order='bgr')
+strip = Adafruit_DotStar(NUM_PIXELS, 4000000, order='bgr')
 strip.begin()           # Initialize pins for output
 strip.setBrightness(64) # Limit brightness to ~1/4 duty cycle
 
@@ -84,8 +84,10 @@ def handle_key(key):
   if key == -1 or key == 10:
     if key == -1:
       kit_index = (kit_index + 1) % len(kits)
+      fireThread.ignite(KEY_TO_FINGER[4][0], KEY_TO_FINGER[4][1])
     else :
       kit_index = (kit_index - 1) % len(kits)
+      fireThread.ignite(KEY_TO_FINGER[5][0], KEY_TO_FINGER[5][1])
     log('new kit_index: {0}', kit_index)
     kits[kit_index]['name'].play()
     if mode == 1:
@@ -96,6 +98,9 @@ def handle_key(key):
       sequencerThread.addClip(KEY_TO_SOUND[key])
     else:
       kits[kit_index][KEY_TO_SOUND[key]].play()
+      # Make room for the thumbs because of my dumb soldering.
+      if key > 3:
+        key = key + 2
       fireThread.ignite(KEY_TO_FINGER[key][0], KEY_TO_FINGER[key][1])
   else:
     log('unknown key: {0}', key)
