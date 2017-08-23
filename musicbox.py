@@ -64,7 +64,7 @@ def log(message, *args):
 def build_kit(kit_name, filenames, prefix=''):
   assert len(filenames) == 11
   return {
-    'name': Sound('/home/pi/musicbox/samples/' + kit_name + '.wav'),
+    'name': Sound('/home/pi/musicboard/samples/' + kit_name + '.wav'),
     'kick': Sound(prefix + filenames[0] + '.wav'),
     'cymbal': Sound(prefix + filenames[1] + '.wav'),
     'snare': Sound(prefix + filenames[2] + '.wav'),
@@ -106,13 +106,13 @@ def handle_key(key):
     log('unknown key: {0}', key)
 
 kits = [
-  build_kit('F_Major', ['F2', 'G2', 'A3', 'A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
-  build_kit('G_Dorian', ['G2', 'A3', 'A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
-  build_kit('A_Phrygian', ['A3', 'A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
-  build_kit('A_Sharp_Lydian', ['A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'rimshot', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
-  build_kit('C_Mixolydian', ['C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'x', 'rimshot', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
-  build_kit('D_Minor', ['D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'D4', 'x', 'rimshot', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
-  build_kit('E_Lochrian', ['E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'D4', 'E4', 'x', 'rimshot', 'elec_twang'], '/home/pi/musicbox/samples/keys/'),
+  build_kit('F_Major', ['F2', 'G2', 'A3', 'A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'elec_twang'], '/home/pi/musicboard/samples/keys/'),
+  build_kit('G_Dorian', ['G2', 'A3', 'A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'elec_twang'], '/home/pi/musicboard/samples/keys/'),
+  build_kit('A_Phrygian', ['A3', 'A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'elec_twang'], '/home/pi/musicboard/samples/keys/'),
+  build_kit('A_Sharp_Lydian', ['A#3', 'C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'rimshot', 'elec_twang'], '/home/pi/musicboard/samples/keys/'),
+  build_kit('C_Mixolydian', ['C3', 'D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'x', 'rimshot', 'elec_twang'], '/home/pi/musicboard/samples/keys/'),
+  build_kit('D_Minor', ['D3', 'E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'D4', 'x', 'rimshot', 'elec_twang'], '/home/pi/musicboard/samples/keys/'),
+  build_kit('E_Lochrian', ['E3', 'F3', 'G3', 'A4', 'B4', 'C4', 'D4', 'E4', 'x', 'rimshot', 'elec_twang'], '/home/pi/musicboard/samples/keys/'),
 ]
 
 kit_index = 0
