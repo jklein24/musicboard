@@ -92,7 +92,7 @@ def handle_key(key):
     kits[kit_index]['name'].play()
     if mode == 1:
       sequencerThread.setKit(kits[kit_index])
-  elif key <  len(KEY_TO_FINGER):
+  elif key <  len(KEY_TO_FINGER) - 2:
     log('pressed {0}', KEY_TO_SOUND[key])
     if mode == 1:
       sequencerThread.addClip(KEY_TO_SOUND[key])
