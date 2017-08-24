@@ -53,7 +53,7 @@ def log(message, *args):
 def build_kit(kit_name, filenames, prefix=''):
   assert len(filenames) == 11
   return {
-    'name': Sound('/home/pi/musicbox/samples/' + kit_name + '.wav'),
+    'name': Sound('/home/pi/musicboard/samples/' + kit_name + '.wav'),
     'kick': Sound(prefix + filenames[0] + '.wav'),
     'cymbal': Sound(prefix + filenames[1] + '.wav'),
     'snare': Sound(prefix + filenames[2] + '.wav'),
@@ -87,9 +87,9 @@ def handle_key(key):
     log('unknown key: {0}', key)
 
 kits = [
-  build_kit('Kit_one', ['kick', 'horn', 'snare', 'femalevox', 'pitchyvox', 'hatz', 'monstervox', 'malevox', 'rimshot', 'bd_zome', 'elec_twang'], '/home/pi/musicbox/samples/Oneshotsample/'),
-  build_kit('Kit_two', ['bd_808', 'drum_cymbal_hard', 'drum_snare_hard', 'bass_trance_c', 'ambi_haunted_hum', 'drum_cymbal_pedal', 'neverbe_clap', 'drum_cowbell', 'ambi_choir', 'misc_crow', 'vinyl_scratch'], '/home/pi/musicbox/samples/'),
-  build_kit('Kit_three', ['bd_tek', 'drum_splash_soft', 'sn_dub', 'tabla_ghe6', 'tabla_ghe8', 'drum_cymbal_closed', 'neverbe_clap', 'drum_cowbell', 'ambi_choir', 'misc_crow', 'vinyl_scratch'], '/home/pi/musicbox/samples/')
+  build_kit('Kit_one', ['kick', 'horn', 'snare', 'femalevox', 'pitchyvox', 'hatz', 'monstervox', 'malevox', 'rimshot', 'bd_zome', 'elec_twang'], '/home/pi/musicboard/samples/Oneshotsample/'),
+  build_kit('Kit_two', ['bd_808', 'drum_cymbal_hard', 'drum_snare_hard', 'bass_trance_c', 'ambi_haunted_hum', 'drum_cymbal_pedal', 'neverbe_clap', 'drum_cowbell', 'ambi_choir', 'misc_crow', 'vinyl_scratch'], '/home/pi/musicboard/samples/'),
+  build_kit('Kit_three', ['bd_tek', 'drum_splash_soft', 'sn_dub', 'tabla_ghe6', 'tabla_ghe8', 'drum_cymbal_closed', 'neverbe_clap', 'drum_cowbell', 'ambi_choir', 'misc_crow', 'vinyl_scratch'], '/home/pi/musicboard/samples/')
 ]
 
 kit_index = 0
